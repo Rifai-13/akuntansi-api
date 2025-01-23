@@ -101,4 +101,40 @@ class AuthController extends Controller
             "data" => $data
         ], 200);
     }
+
+    public function getAllData() {
+        $users = User::all(); // Mengambil semua data dari tabel 'users'
+    
+        return response()->json([
+            "success" => true,
+            "message" => "Data retrieved successfully",
+            "data" => $users
+        ], 200);
+    }
+    
+    public function getDataById(Request $request, $id) {
+        // Validasi token
+        if (!$request->bearerToken()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Token is required"
+            ], 401);
+        }
+    
+        // Verifikasi token dan ambil user
+        $user = User::find($id); // Ambil data berdasarkan ID
+    
+        if (!$user) {
+            return response()->json([
+                "success" => false,
+                "message" => "Data not found"
+            ], 404);
+        }
+    
+        return response()->json([
+            "success" => true,
+            "message" => "Data retrieved successfully",
+            "data" => $user
+        ], 200);
+    }
 }
