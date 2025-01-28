@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Instruktur\KategoriController;
+use App\Http\Controllers\User\JurnalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

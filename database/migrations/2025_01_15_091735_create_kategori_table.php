@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('perusahaan', function (Blueprint $table) {
+        Schema::create('krs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nama');
-            $table->text('alamat');
-            $table->integer('tahun_berdiri');
-            $table->string('status', 100)->default('offline');
-            $table->foreignUuid('kategori_id')->constrained('kategori')->cascadeOnDelete();
+            // $table->string('');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('krs_id')->constrained('krs')->cascadeOnDelete();
+            $table->foreignUuid('kelas_id')->constrained('kelas')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -29,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('perusahaan');
+        Schema::dropIfExists('kategoris');
     }
 };
