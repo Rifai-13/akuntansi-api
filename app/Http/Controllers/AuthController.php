@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendMail;
+use App\Mail\SendMailOTP;
+use App\Models\OTP;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -49,16 +53,39 @@ class AuthController extends Controller
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;
         $data['email'] = $user->email;
-        return response()->json([
-            "success" => true,
-            "message" => "Register success",
-            "data" => $data
-        ], 200);
+        $kode = random_int(100000, 999999);
+        // Kode email akan di kirimkan ketika register untuk OTP
+        if ($user->email_verified_at == null) {
+            $otp = [
+                'user_id' => $user->id,
+                'kode' => $kode,
+                'batas' => now()->addMinute(5),
+            ];
+            OTP::create($otp);
+            $email = [
+                'title' => "Akuntansi Application Email Verification",
+                'kode' => $kode,
+            ];
+            try {
+                Mail::to($user->email)->send(new SendMailOTP($email));
+                return response()->json([
+                    "success" => true,
+                    "message" => "Register success",
+                    "data" => $data,
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send email: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
+
     }
 
     public function login_instruktur(Request $request) {
         $request->validate([
-            'email' => 'required|email:dns',
+            'email' => 'required|email  ',
             'password' => 'required'
         ]);
 
@@ -83,7 +110,7 @@ class AuthController extends Controller
     public function register_instruktur(Request $request) {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email:dns|unique:users,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required',
         ]);
 
@@ -95,11 +122,53 @@ class AuthController extends Controller
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['role'] = $user->role;
-        return response()->json([
-            "success" => true,
-            "message" => "Register success",
-            "data" => $data
-        ], 200);
+        $kode = random_int(100000, 999999);
+        // Kode email akan di kirimkan ketika register untuk OTP
+        if ($user->email_verified_at == null) {
+            $otp = [
+                'user_id' => $user->id,
+                'kode' => $kode,
+                'batas' => now()->addMinute(5),
+            ];
+            OTP::create($otp);
+            $email = [
+                'title' => "Send OTP Aplication",
+                'kode' => $kode,
+            ];
+            try {
+                Mail::to($user->email)->send(new SendMailOTP($email));
+                return response()->json([
+                    "success" => true,
+                    "message" => "Register success",
+                    "data" => $data,
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send email: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
+    }
+
+    public function verifikasi(Request $request) {
+        $otp = OTP::where('batas','<', now()->subDays(7))->delete();
+        $otp = OTP::where('kode', $request->kode)->where('status', 1)->first();
+        if (!$otp) {
+            return response()->json(["message" => "Kode OTP tidak ditemukan atau telah diverifikasi"], 404);
+        } else if ($otp->batas == now()->isAfter($otp->batas)) {
+            $otp->delete();
+            return response()->json(["message" => "Kode OTP telah kadaluwarsa atau tidak valid"], 404);
+        }else if ($otp->batas == now()->isBefore($otp->batas)) {
+            $user = User::find($otp->user_id);
+            $user->update(['email_verified_at' => now()]);
+            $otp->update(['status'=> 0]);
+            // $otp->delete();
+            return response()->json([
+                'success' => true,
+                'message' => "Email berhasil di aktivasi",
+            ],200);
+        }
     }
 
     public function getAllData() {

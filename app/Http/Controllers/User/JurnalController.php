@@ -13,7 +13,7 @@ class JurnalController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
