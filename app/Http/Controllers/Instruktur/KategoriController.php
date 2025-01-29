@@ -13,7 +13,12 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        //
+        $kategori = Kategori::all(); // Mengambil semua data kategori
+        return response()->json([
+            'success' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => $kategori
+        ]);
     }
 
     /**
@@ -21,15 +26,33 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        // Validasi input
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+        ]);
+    
+        // Membuat data kategori baru tanpa menyebutkan ID
+        $kategori = Kategori::create([
+            'nama' => $validated['nama'],
+        ]);
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Kategori created successfully',
+            'data' => $kategori
+        ], 201);
+    }    
 
     /**
      * Display the specified resource.
      */
     public function show(Kategori $kategori)
     {
-        //
+        return response()->json([
+            'success' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => $kategori
+        ]);
     }
 
     /**
@@ -37,7 +60,21 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Kategori $kategori)
     {
-        //
+        // Validasi input
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+        ]);
+
+        // Update data kategori
+        $kategori->update([
+            'nama' => $validated['nama'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kategori updated successfully',
+            'data' => $kategori
+        ]);
     }
 
     /**
@@ -45,6 +82,11 @@ class KategoriController extends Controller
      */
     public function destroy(Kategori $kategori)
     {
-        //
+        $kategori->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kategori deleted successfully'
+        ]);
     }
 }
