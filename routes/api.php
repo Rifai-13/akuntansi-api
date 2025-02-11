@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\KrsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Instruktur\AkunController;
 use App\Http\Controllers\Instruktur\KelasController;
@@ -10,11 +9,22 @@ use App\Http\Controllers\Instruktur\UsersController;
 use App\Http\Controllers\Instruktur\KategoriController;
 use App\Http\Controllers\Instruktur\MonitoringController;
 use App\Http\Controllers\Instruktur\ProfileInstrukturController;
+use App\Http\Controllers\User\BukuBesarController;
+use App\Http\Controllers\User\JurnalController;
+use App\Http\Controllers\User\KeuanganController;
+use App\Http\Controllers\User\KRSController;
+use App\Http\Controllers\User\NeracaLajurController;
+use App\Http\Controllers\User\PerusahaanController;
+use App\Http\Controllers\User\ProfileMahasiswaController;
+use App\Http\Controllers\User\RingkasanController;
+use App\Http\Controllers\User\SubAkunController;
 
-Route::prefix('/mahasiswa')->group(
+Route::prefix('/instruktur')->group(
     function () {
-        Route::post('/login', [AuthController::class, 'login_mahasiswa']);
-        Route::post('/register', [AuthController::class, 'register_mahasiswa']);
+        Route::post('/login', [AuthController::class, 'login_instruktur']);
+        Route::post('/register', [AuthController::class, 'register_instruktur']);
+        Route::post('/verifikasi', [AuthController::class, 'verifikasi']);
+        Route::post('/resendotp', [AuthController::class, 'resendOTP']);
         Route::apiResource('/kategori', KategoriController::class);
         Route::apiResource('/akun', AkunController::class);
         Route::apiResource('/kelas', KelasController::class);
@@ -32,11 +42,27 @@ Route::prefix('/mahasiswa')->group(
 
     }
 );
-Route::prefix('/instruktur')->group(
+Route::prefix('/mahasiswa')->group(
     function () {
-        Route::post('/login', [AuthController::class, 'login_instruktur']);
-        Route::post('/register', [AuthController::class, 'register_instruktur']);
+        Route::post('/login', [AuthController::class, 'login_mahasiswa']);
+        Route::post('/register', [AuthController::class, 'register_mahasiswa']);
+        Route::post('/verifikasi', [AuthController::class, 'verifikasi']);
+        Route::post('/resendotp', [AuthController::class, 'resendOTP']);
 
+        Route::middleware(['auth:sanctum'])->group(function () {
+            Route::post('/ringkasan', [RingkasanController::class, 'ringkasan']);
+            Route::get('/bukubesar/sort', [BukuBesarController::class, 'sortData']);
+            Route::get('/neracalajur/sebelumpenyesuaian', [NeracaLajurController::class, 'sebelumPenyesuaian']);
+            Route::get('/neracalajur/setelahpenyesuaian', [NeracaLajurController::class, 'setelahPenyesuaian']);
+            Route::post('/perusahaan/status', [PerusahaanController::class, 'status']);
+
+            Route::apiResource('/krs', KRSController::class);
+            Route::apiResource('/perusahaan', PerusahaanController::class);
+            Route::apiResource('/jurnal', JurnalController::class);
+            Route::apiResource('/subakun', SubAkunController::class);
+            Route::apiResource('/keuangan', KeuanganController::class);
+            Route::apiResource('/profile', ProfileMahasiswaController::class);
+        });
     }
 );
 

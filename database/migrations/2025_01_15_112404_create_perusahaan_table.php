@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('tahun_berdiri');
             $table->string('status', 100)->default('offline');
             $table->foreignUuid('kategori_id')->constrained('kategori')->cascadeOnDelete();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
+            // $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('krs_id')->constrained('krs')->cascadeOnDelete();
             $table->timestamps();
         });

@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->foreignUuid("akun_id")->constrained("akun")->cascadeOnDelete();
             $table->foreignUuid("perusahaan_id")->constrained("perusahaan")->cascadeOnDelete();
-            $table->integer("debit");
-            $table->integer("kredit");
-            $table->foreignUuid("sub_akun_id")->constrained("sub_akun")->cascadeOnDelete()->nullable();
+            $table->integer("debit")->nullable();
+            $table->integer("kredit")->nullable();
+            $table->foreignUuid("sub_akun_id")->constrained("sub_akun")->nullable()->cascadeOnDelete();
             $table->timestamps();
         });
     }

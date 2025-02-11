@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('profile_mahasiswa', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('kelas_id')->constrained('kelas')->cascadeOnDelete();
             $table->text('bio')->nullable();
             $table->string('foto')->nullable();
             $table->bigInteger("hp")->nullable();

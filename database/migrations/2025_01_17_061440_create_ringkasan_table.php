@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ringkasan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('jurnal_id')->constrained('jurnal')->cascadeOnDelete();
+            $table->foreignUuid('akun_id')->constrained('akun')->cascadeOnDelete();
             $table->integer('selisih')->nullable();
             $table->timestamps();
         });

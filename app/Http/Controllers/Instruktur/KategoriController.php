@@ -30,18 +30,18 @@ class KategoriController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
         ]);
-    
+
         // Membuat data kategori baru tanpa menyebutkan ID
         $kategori = Kategori::create([
             'nama' => $validated['nama'],
         ]);
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Kategori created successfully',
             'data' => $kategori
         ], 201);
-    }    
+    }
 
     /**
      * Display the specified resource.
@@ -62,13 +62,11 @@ class KategoriController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'sometimes|string|max:255',
         ]);
 
         // Update data kategori
-        $kategori->update([
-            'nama' => $validated['nama'],
-        ]);
+        $kategori->update($validated);
 
         return response()->json([
             'success' => true,

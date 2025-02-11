@@ -11,17 +11,17 @@
 <body>
 <h2>{{ $email['title'] }}</h2>
 
-<p>Berikut kami cantumkan kode OTP untuk memverifikasi email anda</p>
-<p>Rahasiakan kode ini pada orang terdekat anda</p>
+<p>Below we include the OTP code to verify your email.</p>
+<p>Keep this code secret from your closest people and everyone else.</p>
 
 <p style="font-weight: bolder">
     {{ $email['kode'] }}
 </p>
 
-<p>Kode ini hanya berlaku selama 5 menit.</p>
+<p>This code is only valid for 5 minutes.</p>
 <br>
 <p>Regards</p>
-<p>Tim Development</p>
+<p>Team Development</p>
 
 </body>
 

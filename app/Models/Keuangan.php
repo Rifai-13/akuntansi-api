@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Validation\Rule;
 
-class Jurnal extends Model
+class Keuangan extends Model
 {
     use HasUuids;
+    protected $table = 'keuangan';
     protected $guarded = ['id'];
-    protected $table = 'jurnal';
 
     /**
-     * Get the akun that owns the Jurnal
+     * Get the akun that owns the Keuangan
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -23,17 +24,7 @@ class Jurnal extends Model
     }
 
     /**
-     * Get the subAkun that owns the Jurnal
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function subAkun(): BelongsTo
-    {
-        return $this->belongsTo(subAkun::class, 'sub_akun_id', 'id');
-    }
-
-    /**
-     * Get the perusahaan that owns the Jurnal
+     * Get the perusahaan that owns the Keuangan
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -41,4 +32,15 @@ class Jurnal extends Model
     {
         return $this->belongsTo(Perusahaan::class, 'perusahaan_id', 'id');
     }
+
+    /**
+     * Get the sub_akun that owns the Keuangan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function sub_akun(): BelongsTo
+    {
+        return $this->belongsTo(SubAkun::class, 'sub_akun_id', 'id');
+    }
+
 }

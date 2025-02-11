@@ -49,7 +49,6 @@ class AuthController extends Controller
         $request['password'] = Hash::make($request['password']);
         $user = User::create($request->toArray());
 
-        $data['token'] = $user->createToken('token')->plainTextToken;
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;
         $data['email'] = $user->email;
@@ -118,7 +117,6 @@ class AuthController extends Controller
         $request['role'] = 'admin';
         $user = User::create($request->toArray());
 
-        $data['token'] = $user->createToken('token')->plainTextToken;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['role'] = $user->role;
@@ -132,7 +130,7 @@ class AuthController extends Controller
             ];
             OTP::create($otp);
             $email = [
-                'title' => "Send OTP Aplication",
+                'title' => "This is your OTP code valid for 5 minutes",
                 'kode' => $kode,
             ];
             try {
@@ -161,7 +159,7 @@ class AuthController extends Controller
             return response()->json(["message" => "Kode OTP telah kadaluwarsa atau tidak valid"], 404);
         }else if ($otp->batas == now()->isBefore($otp->batas)) {
             $user = User::find($otp->user_id);
-            $user->update(['email_verified_at' => now()]);
+            $user->updateOrFail(['email_verified_at' => now()]);
             $otp->update(['status'=> 0]);
             // $otp->delete();
             return response()->json([
@@ -171,16 +169,42 @@ class AuthController extends Controller
         }
     }
 
+    public function resendOTP(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        $kode = random_int(100000, 999999);
+        OTP::where('user_id', $user->id)->delete();
+        $otp = [
+            'user_id' => $user->id,
+            'kode' => $kode,
+            'status' => 1,
+            'batas' => now()->addMinute(5),
+        ];
+        OTP::create($otp);
+        $styleEmail = [
+            'title' => 'This is your OTP code valid for 5 minutes',
+            'kode' => $kode,
+        ];
+        Mail::to($user->email)->send(new SendMailOTP($styleEmail));
+        return response()->json(
+            [
+                'success' => true,
+                'message' => "Send Code OTP Has Successfully",
+                'data' => $user,
+            ]
+        );
+
+    }
+
     public function getAllData() {
         $users = User::all(); // Mengambil semua data dari tabel 'users'
-    
+
         return response()->json([
             "success" => true,
             "message" => "Data retrieved successfully",
             "data" => $users
         ], 200);
     }
-    
+
     public function getDataById(Request $request, $id) {
         // Validasi token
         if (!$request->bearerToken()) {
@@ -189,17 +213,17 @@ class AuthController extends Controller
                 "message" => "Token is required"
             ], 401);
         }
-    
+
         // Verifikasi token dan ambil user
         $user = User::find($id); // Ambil data berdasarkan ID
-    
+
         if (!$user) {
             return response()->json([
                 "success" => false,
                 "message" => "Data not found"
             ], 404);
         }
-    
+
         return response()->json([
             "success" => true,
             "message" => "Data retrieved successfully",

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Krs;
 use Illuminate\Http\Request;
 
-class KrsController extends Controller
+class KRSController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -48,19 +49,20 @@ class KrsController extends Controller
     public function show($id)
     {
         // Menampilkan detail data KRS berdasarkan ID
-        $krs = Krs::with(['kelas', 'mahasiswa'])->find($id);
+        try {
+            $krs = Krs::with(['kelas', 'mahasiswa'])->findOrFail($id);
 
-        if (!$krs) {
+            return response()->json([
+                'success' => true,
+                'data' => $krs
+            ], 200);
+
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
                 'message' => 'KRS tidak ditemukan'
             ], 404);
         }
-
-        return response()->json([
-            'success' => true,
-            'data' => $krs
-        ]);
     }
 
     /**
@@ -70,28 +72,29 @@ class KrsController extends Controller
     {
         // Validasi input
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kelas_id' => 'required|exists:kelas,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'kelas_id' => 'sometimes|exists:kelas,id',
         ]);
+        try {
+            // Cari data KRS
+            $krs = Krs::findOrFail($id);
 
-        // Cari data KRS
-        $krs = Krs::find($id);
+            // Update data KRS
+            $krs->update($request->only('user_id', 'kelas_id'));
 
-        if (!$krs) {
+            return response()->json([
+                'success' => true,
+                'message' => 'KRS berhasil diperbarui',
+                'data' => $krs
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
             return response()->json([
                 'success' => false,
                 'message' => 'KRS tidak ditemukan'
             ], 404);
         }
 
-        // Update data KRS
-        $krs->update($request->only('user_id', 'kelas_id'));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'KRS berhasil diperbarui',
-            'data' => $krs
-        ]);
     }
 
     /**
@@ -99,22 +102,26 @@ class KrsController extends Controller
      */
     public function destroy($id)
     {
-        // Cari data KRS
-        $krs = Krs::find($id);
+        try {
+            // Cari data KRS
+            $krs = Krs::find($id);
 
-        if (!$krs) {
+
+            // Hapus data KRS
+            $krs->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'KRS berhasil dihapus'
+            ], 200);
+        } catch (\Throwable $th) {
+            //throw $th;
             return response()->json([
                 'success' => false,
                 'message' => 'KRS tidak ditemukan'
             ], 404);
         }
-
-        // Hapus data KRS
-        $krs->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'KRS berhasil dihapus'
-        ]);
+        if (!$krs) {
+        }
     }
 }

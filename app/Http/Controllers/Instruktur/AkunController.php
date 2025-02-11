@@ -40,7 +40,6 @@ class AkunController extends Controller
 
         // Membuat data akun baru
         $akun = Akun::create([
-            'id' => (string) Str::uuid(),
             'kode' => $validated['kode'],
             'nama' => $validated['nama'],
             'status' => $validated['status'] ?? 'close',
@@ -78,24 +77,24 @@ class AkunController extends Controller
             'status' => 'sometimes|string|in:open,close',
             'kategori_id' => 'sometimes|uuid|exists:kategori,id',
         ]);
-    
+
         // Update data akun
         $updated = $akun->update($validated);
-    
+
         if (!$updated) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update Akun',
             ]);
         }
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Akun updated successfully',
             'data' => $akun->fresh()->load('kategori'),
         ]);
     }
-    
+
 
     /**
      * Remove the specified resource from storage.

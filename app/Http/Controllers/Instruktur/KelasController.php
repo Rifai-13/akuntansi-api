@@ -16,23 +16,19 @@ class KelasController extends Controller
     {
         try {
             $kelas = Kelas::all()->fresh();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data retrieved successfully',
                 'data' => $kelas,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error($e->getMessage());
-    
             return response()->json([
                 'success' => false,
                 'message' => 'Error retrieving data',
             ], 500);
         }
     }
-    
-    
 
     /**
      * Store a newly created resource in storage.
@@ -56,77 +52,51 @@ class KelasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Kelas $kelas)
+    public function show(Kelas $kela)
     {
         return response()->json([
             'success' => true,
             'message' => 'Data retrieved successfully',
-            'data' => $kelas
+            'data' => $kela
         ]);
     }
 
-        /**
-         * Update the specified resource in storage.
-         */
-        public function update(Request $request, $id)
-{
-    try {
-        // Validasi input
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'angkatan' => 'required|integer',
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Kelas $kela)
+    {
+        $request = $request->validate([
+            'nama' => 'sometimes|string',
+            'angkatan' => 'sometimes|integer',
         ]);
 
-        // Validasi UUID
-        $kelas = Kelas::findOrFail($id); // mencari berdasarkan UUID
-        $kelas->update($validated); // melakukan update
-
-        \Illuminate\Support\Facades\Log::info('Update attempt for Kelas ID: ' . $kelas->id);
-        \Illuminate\Support\Facades\Log::info('Updated data: ', $validated);
+        $kela->update($request);
 
         return response()->json([
             'success' => true,
-            'message' => 'Kelas updated successfully',
-            'data' => $kelas
+            'message' => 'Data Update Successfully',
+            'data' => $kela
         ]);
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        // Jika data tidak ditemukan
-        \Illuminate\Support\Facades\Log::error('Kelas with ID ' . $id . ' not found');
-        return response()->json([
-            'success' => false,
-            'message' => 'Kelas not found'
-        ], 404);
-    } catch (\Exception $e) {
-        // Tangani error lainnya
-        \Illuminate\Support\Facades\Log::error('Error updating kelas: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Error updating kelas: ' . $e->getMessage()
-        ], 500);
     }
-}
 
 
-    public function destroy($id)
+    public function destroy($kela)
     {
         try {
-            $kelas = Kelas::findOrFail($id);
-    
-            \Illuminate\Support\Facades\Log::info('Delete attempt for Kelas ID: ' . $kelas->id);
-    
+            $kelas = Kelas::findOrFail($kela);
             $kelas->delete();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Kelas deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error deleting kelas: ' . $e->getMessage());
+            ], 200);
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting kelas: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Kelas deleted faileds'
+            ], 404);
         }
     }
-    
+
 }
