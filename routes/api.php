@@ -42,6 +42,7 @@ Route::prefix('/instruktur')->group(
 
     }
 );
+
 Route::prefix('/mahasiswa')->group(
     function () {
         Route::post('/login', [AuthController::class, 'login_mahasiswa']);
