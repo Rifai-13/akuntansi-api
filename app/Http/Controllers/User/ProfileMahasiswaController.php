@@ -27,7 +27,6 @@ class ProfileMahasiswaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|uuid',
             'bio' => 'required|string',
             'foto' => 'mimes:jpg,png,jpeg|max:3048',
             'hp' => 'required|numeric',
@@ -35,8 +34,9 @@ class ProfileMahasiswaController extends Controller
             'tiktok' => 'nullable',
             'facebook' => 'nullable',
         ]);
+        $validated['user_id'] = $request->user()->id;
         if ($request->hasFile("foto") && $request->file('foto')->isValid()) {
-        $validated['foto'] = $request->file('foto')->store('profiles', 'public');
+            $validated['foto'] = $request->file('foto')->store('profiles', 'public');
         }
         // dd($validated);
         ProfileMahasiswa::create($validated);
