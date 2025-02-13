@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Akun;
 use App\Models\Krs;
 use App\Models\Perusahaan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PerusahaanController extends Controller
 {
@@ -14,7 +16,10 @@ class PerusahaanController extends Controller
      */
     public function index()
     {
-        $data = Perusahaan::with(['kategori', 'krs.mahasiswa', 'krs.kelas'])->get();
+        $user = Auth::user();
+        $krs = Krs::with(['mahasiswa', 'kelas'])->where('user_id', $user->id)->get()->pluck('id');
+        $data = Perusahaan::with(['kategori', 'krs.mahasiswa', 'krs.kelas'])->whereIn('krs_id', $krs)->get();
+        
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -30,7 +35,7 @@ class PerusahaanController extends Controller
             'nama' => 'required|string',
             'alamat' => 'required|string',
             'tahun_berdiri' => 'required|integer',
-            'status' => 'required|string|in:active,inactive',
+            'status' => 'nullable|string|in:offline,online',
             'kategori_id' => 'required',
             'krs_id' => 'required',
         ]);
@@ -50,10 +55,12 @@ class PerusahaanController extends Controller
     {
         try {
             $data = Perusahaan::with(['kategori', 'krs.mahasiswa', 'krs.kelas'])->findOrFail($id);
+            $akun = Akun::where('kategori_id', $data->kategori_id)->get();
 
             return response()->json([
                 'success' => true,
-                'data' => $data
+                'data' => $data,
+                'akun' => $akun,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -112,12 +119,25 @@ class PerusahaanController extends Controller
     }
 
     public function status(Request $request) {
-        $data = Perusahaan::where('krs_id', $request->krs_id)->where('id', $request->perusahaan_id)->first();
-        $data->update(['status' => ($data->status == 'online') ? 'offline' : 'online']);
-        return response()->json(
-            [
-                'data' => $data,
-            ]
-        );
+        try {
+            $data = Perusahaan::where('krs_id', $request->krs_id)->where('id', $request->perusahaan_id)->first();
+            Perusahaan::where('krs_id', $request->krs_id)->where('id','!=', $request->perusahaan_id)->update(['status'=>'offline']);
+            $data->update(['status' => 'online']);
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => "Perusahaan ". $data->nama ." status ".$data->status,
+                    'data' => $data,
+                ], 200
+            );
+        } catch (\Throwable $th) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => "Failed Change Status",
+
+                ], 404
+            );
+        }
     }
 }

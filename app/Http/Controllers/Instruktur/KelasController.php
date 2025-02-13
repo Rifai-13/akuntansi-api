@@ -38,6 +38,7 @@ class KelasController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'angkatan' => 'required|integer',
+            'kategori' => 'required|string|max:255',
         ]);
 
         $kelas = Kelas::create($validated);
@@ -69,6 +70,7 @@ class KelasController extends Controller
         $request = $request->validate([
             'nama' => 'sometimes|string',
             'angkatan' => 'sometimes|integer',
+            'kategori' => 'sometimes|string',
         ]);
 
         $kela->update($request);

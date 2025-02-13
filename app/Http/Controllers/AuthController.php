@@ -20,10 +20,10 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (Auth::attempt(["nim"=>$request->nim, "password"=> $request->password])) {
+        if (Auth::attempt(["nim"=> $request->nim, "password"=> $request->password])) {
             $user = Auth::user();
             $data['token'] = $user->createToken('token')->plainTextToken;
-            $data['nama'] = $user->nama;
+            $data['nama'] = $user->name;
             $data['nim'] = $user->nim;
             $data['email'] = $user->email;
             return response()->json([
@@ -39,7 +39,7 @@ class AuthController extends Controller
     }
 
     public function register_mahasiswa(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required',
             'nim' => 'required',
             'email' => 'required|email|unique:users,email',
@@ -47,7 +47,7 @@ class AuthController extends Controller
         ]);
 
         $request['password'] = Hash::make($request['password']);
-        $user = User::create($request->toArray());
+        $user = User::create($validated);
 
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;
@@ -107,15 +107,15 @@ class AuthController extends Controller
     }
 
     public function register_instruktur(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
         ]);
 
         $request['password'] = Hash::make($request['password']);
-        $request['role'] = 'admin';
-        $user = User::create($request->toArray());
+        $request['role'] = 2;
+        $user = User::create($validated);
 
         $data['name'] = $user->name;
         $data['email'] = $user->email;
@@ -193,6 +193,14 @@ class AuthController extends Controller
             ]
         );
 
+    }
+
+    public function logout(Request $request) {
+        $request->user()->tokens()->delete();
+        return response()->json([
+
+            'message' => "Logout successfully",
+        ]);
     }
 
     public function getAllData() {

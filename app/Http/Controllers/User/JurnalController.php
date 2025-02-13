@@ -85,28 +85,29 @@ class JurnalController extends Controller
     {
         try {
             $jurnal = Jurnal::with(['akun', 'subAkun', 'perusahaan'])->findOrFail($jurnal);
-            $request = $request->validate([
-                'tanggal' => "sometimes|date",
-                'bukti' => 'sometimes|nullable|string',
-                'keterangan' => "sometimes|nullable|string",
-                'akun_id' => "sometimes|uuid",
-                'debit' => "sometimes|nullable",
-                'kredit' => "sometimes|nullable",
-                'perusahaan_id' => "sometimes|uuid",
-                'sub_akun_id' => "sometimes|nullable|uuid",
-            ]);
-            $jurnal->update($request);
-            return response()->json([
-                'success' => true,
-                'message' => 'Data successfully changed',
-                'data' => $jurnal
-            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data failed changed',
             ],404);
         }
+
+        $request = $request->validate([
+            'tanggal' => "sometimes|date",
+            'bukti' => 'sometimes|nullable|string',
+            'keterangan' => "sometimes|nullable|string",
+            'akun_id' => "sometimes|uuid",
+            'debit' => "sometimes|nullable",
+            'kredit' => "sometimes|nullable",
+            'perusahaan_id' => "sometimes|uuid",
+            'sub_akun_id' => "sometimes|nullable|uuid",
+        ]);
+        $jurnal->update($request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data successfully changed',
+            'data' => $jurnal
+        ], 200);
     }
 
     /**

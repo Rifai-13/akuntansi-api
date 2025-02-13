@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('debit')->nullable();
             $table->integer('kredit')->nullable();
             $table->foreignUuid('perusahaan_id')->constrained('perusahaan')->cascadeOnDelete();
-            $table->foreignUuid('sub_akun_id')->constrained('sub_akun')->cascadeOnDelete()->nullable();
+            $table->foreignUuid('sub_akun_id')->nullable()->constrained('sub_akun')->cascadeOnDelete();
             $table->timestamps();
         });
     }
