@@ -15,6 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('bio')->nullable();
+            $table->string('gender', 100)->nullable();
+            $table->text('tempat', 100)->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->text('alamat')->nullable();
             $table->string('foto')->nullable();
             $table->bigInteger("hp")->nullable();
             $table->string('instagram')->nullable();

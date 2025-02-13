@@ -28,6 +28,10 @@ class ProfileMahasiswaController extends Controller
     {
         $validated = $request->validate([
             'bio' => 'required|string',
+            'alamat' => 'required|string',
+            'gender' => 'required|string',
+            'tempat' => 'required|string',
+            'tanggal_lahir' => 'required|date',
             'foto' => 'mimes:jpg,png,jpeg|max:3048',
             'hp' => 'required|numeric',
             'intagram' => 'nullable',
@@ -75,6 +79,10 @@ class ProfileMahasiswaController extends Controller
             $validated = $request->validate([
                 'user_id' => 'sometimes|uuid',
                 'bio' => 'sometimes|string',
+                'gender' => 'sometimes|string',
+                'tempat' => 'sometimes|string',
+                'tanggal_lahir' => 'sometimes|date',
+                'alamat' => 'sometimes|string',
                 'foto' => 'mimes:jpg,png,jpeg|max:3048',
                 'hp' => 'sometimes|numeric',
                 'intagram' => 'nullable',
