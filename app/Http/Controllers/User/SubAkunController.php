@@ -27,15 +27,16 @@ class SubAkunController extends Controller
      */
     public function store(Request $request)
     {
-        $request = $request->validate([
-            'kode' => 'required|integer',
+        $validated = $request->validate([
+            // 'kode' => 'required|string',
             'nama' => 'required|string',
             'akun_id' => 'required|uuid',
             'perusahaan_id' => 'required|uuid'
         ]);
         $akun = Akun::where('id', $request['akun_id'])->first();
+        $validated['kode'] = $akun->kode.'.'.$request->kode;
         if ($akun->status == 'open') {
-            SubAkun::create($request);
+            SubAkun::create($validated);
             return response()->json([
                 'success' => true,
                 'message' => "Data Successfully Saved",
