@@ -6,6 +6,7 @@ use App\Mail\SendMail;
 use App\Mail\SendMailOTP;
 use App\Models\OTP;
 use App\Models\User;
+use App\Models\ProfileMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -14,13 +15,14 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-    public function login_mahasiswa(Request $request) {
+    public function login_mahasiswa(Request $request)
+    {
         $request->validate([
             'nim' => 'required',
             'password' => 'required'
         ]);
 
-        if (Auth::attempt(["nim"=> $request->nim, "password"=> $request->password])) {
+        if (Auth::attempt(["nim" => $request->nim, "password" => $request->password])) {
             $user = Auth::user();
             $data['token'] = $user->createToken('token')->plainTextToken;
             $data['nama'] = $user->name;
@@ -38,7 +40,8 @@ class AuthController extends Controller
         }
     }
 
-    public function register_mahasiswa(Request $request) {
+    public function register_mahasiswa(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required',
             'nim' => 'required',
@@ -48,6 +51,12 @@ class AuthController extends Controller
 
         $request['password'] = Hash::make($request['password']);
         $user = User::create($validated);
+
+        // Membuat entri di tabel ProfileMahasiswa
+        // $profileData = [
+        //     'user_id' => $user->id,
+        // ];
+        // ProfileMahasiswa::create($profileData);
 
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;
@@ -79,16 +88,16 @@ class AuthController extends Controller
                 ], 500);
             }
         }
-
     }
 
-    public function login_instruktur(Request $request) {
+    public function login_instruktur(Request $request)
+    {
         $request->validate([
             'email' => 'required|email  ',
             'password' => 'required'
         ]);
 
-        if (Auth::attempt(["email"=>$request->email, "password"=> $request->password])) {
+        if (Auth::attempt(["email" => $request->email, "password" => $request->password])) {
             $user = Auth::user();
             $data['token'] = $user->createToken('token')->plainTextToken;
             $data['name'] = $user->name;
@@ -106,7 +115,8 @@ class AuthController extends Controller
         }
     }
 
-    public function register_instruktur(Request $request) {
+    public function register_instruktur(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
@@ -149,27 +159,29 @@ class AuthController extends Controller
         }
     }
 
-    public function verifikasi(Request $request) {
-        $otp = OTP::where('batas','<', now()->subDays(7))->delete();
+    public function verifikasi(Request $request)
+    {
+        $otp = OTP::where('batas', '<', now()->subDays(7))->delete();
         $otp = OTP::where('kode', $request->kode)->where('status', 1)->first();
         if (!$otp) {
             return response()->json(["message" => "Kode OTP tidak ditemukan atau telah diverifikasi"], 404);
         } else if ($otp->batas == now()->isAfter($otp->batas)) {
             $otp->delete();
             return response()->json(["message" => "Kode OTP telah kadaluwarsa atau tidak valid"], 404);
-        }else if ($otp->batas == now()->isBefore($otp->batas)) {
+        } else if ($otp->batas == now()->isBefore($otp->batas)) {
             $user = User::find($otp->user_id);
             $user->updateOrFail(['email_verified_at' => now()]);
-            $otp->update(['status'=> 0]);
+            $otp->update(['status' => 0]);
             // $otp->delete();
             return response()->json([
                 'success' => true,
                 'message' => "Email berhasil di aktivasi",
-            ],200);
+            ], 200);
         }
     }
 
-    public function resendOTP(Request $request) {
+    public function resendOTP(Request $request)
+    {
         $user = User::where('email', $request->email)->first();
         $kode = random_int(100000, 999999);
         OTP::where('user_id', $user->id)->delete();
@@ -192,10 +204,10 @@ class AuthController extends Controller
                 'data' => $user,
             ]
         );
-
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->tokens()->delete();
         return response()->json([
 
@@ -203,7 +215,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function getAllData() {
+    public function getAllData()
+    {
         $users = User::all(); // Mengambil semua data dari tabel 'users'
 
         return response()->json([
@@ -213,7 +226,8 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function getDataById(Request $request, $id) {
+    public function getDataById(Request $request, $id)
+    {
         // Validasi token
         if (!$request->bearerToken()) {
             return response()->json([
