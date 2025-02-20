@@ -19,7 +19,7 @@ class PerusahaanController extends Controller
         $user = Auth::user();
         $krs = Krs::with(['mahasiswa', 'kelas'])->where('user_id', $user->id)->get()->pluck('id');
         $data = Perusahaan::with(['kategori', 'krs.mahasiswa', 'krs.kelas'])->whereIn('krs_id', $krs)->get();
-        
+
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -37,6 +37,8 @@ class PerusahaanController extends Controller
             'tahun_berdiri' => 'required|integer',
             'status' => 'nullable|string|in:offline,online',
             'kategori_id' => 'required',
+            'start_priode' => 'required|date',
+            'end_priode' => 'required|date',
             'krs_id' => 'required',
         ]);
         Perusahaan::create($request);
