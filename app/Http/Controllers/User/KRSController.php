@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Krs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KRSController extends Controller
 {
@@ -14,7 +15,7 @@ class KRSController extends Controller
     public function index()
     {
         // Mengambil semua data KRS dengan relasi kelas dan mahasiswa
-        $krs = Krs::with(['kelas', 'mahasiswa'])->get();
+        $krs = Krs::with(['kelas', 'mahasiswa'])->where('user_id', Auth::user()->id)->get();
 
         return response()->json([
             'success' => true,
@@ -28,13 +29,13 @@ class KRSController extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
+        $validated = $request->validate([
+            // 'user_id' => 'required|exists:users,id',
             'kelas_id' => 'required|exists:kelas,id',
         ]);
-
+        $validated['user_id'] = Auth::user()->id;
         // Membuat data KRS baru
-        $krs = Krs::create($request->only('user_id', 'kelas_id'));
+        $krs = Krs::create($validated);
 
         return response()->json([
             'success' => true,
