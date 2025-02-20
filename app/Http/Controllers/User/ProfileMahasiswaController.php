@@ -78,18 +78,19 @@ class ProfileMahasiswaController extends Controller
         try {
             $profile = ProfileMahasiswa::findOrFail($profileMahasiswa);
             $validated = $request->validate([
-                'user_id' => 'sometimes|uuid',
-                'bio' => 'sometimes|string',
-                'gender' => 'sometimes|string',
-                'tempat' => 'sometimes|string',
-                'tanggal_lahir' => 'sometimes|date',
-                'alamat' => 'sometimes|string',
-                'foto' => 'mimes:jpg,png,jpeg|max:3048',
-                'hp' => 'sometimes|numeric',
-                'intagram' => 'nullable',
-                'tiktok' => 'nullable',
-                'facebook' => 'nullable',
+                'user_id' => 'nullable|uuid',  
+                'bio' => 'nullable|string',    
+                'gender' => 'nullable|string', 
+                'tempat' => 'nullable|string', 
+                'tanggal_lahir' => 'nullable|date', 
+                'alamat' => 'nullable|string', 
+                'foto' => 'nullable|mimes:jpg,png,jpeg|max:3048', 
+                'hp' => 'nullable|numeric',   
+                'instagram' => 'nullable',    
+                'tiktok' => 'nullable',       
+                'facebook' => 'nullable',     
             ]);
+    
             if ($request->hasFile("foto") && $request->file('foto')->isValid()) {
                 Storage::disk('public')->delete($profile->foto);
                 $validated['foto'] = $request->file('foto')->store('profiles', 'public');
