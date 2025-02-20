@@ -50,7 +50,8 @@ class AuthController extends Controller
         $request['password'] = Hash::make($request['password']);
         $user = User::create($validated);
         $idUser = $user['id'];
-        ProfileMahasiswa::create($idUser);
+        // dd($idUser);
+        ProfileMahasiswa::create(['user_id' => $idUser]);
 
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;
