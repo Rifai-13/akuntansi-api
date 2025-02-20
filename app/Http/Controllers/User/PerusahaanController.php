@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Krs;
 use App\Models\Perusahaan;
+use App\Models\SubAkun;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,11 +59,13 @@ class PerusahaanController extends Controller
         try {
             $data = Perusahaan::with(['kategori', 'krs.mahasiswa', 'krs.kelas'])->findOrFail($id);
             $akun = Akun::where('kategori_id', $data->kategori_id)->get();
+            $subAkun = SubAkun::whereIn('akun_id', $akun->pluck('id'))->get();
 
             return response()->json([
                 'success' => true,
                 'data' => $data,
                 'akun' => $akun,
+                'sub_akun' => $subAkun,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
