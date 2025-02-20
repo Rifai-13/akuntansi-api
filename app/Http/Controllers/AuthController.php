@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\SendMail;
 use App\Mail\SendMailOTP;
 use App\Models\OTP;
+use App\Models\ProfileMahasiswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +49,9 @@ class AuthController extends Controller
 
         $request['password'] = Hash::make($request['password']);
         $user = User::create($validated);
+
+        $iduser = $user['id'];
+        ProfileMahasiswa::create($iduser);
 
         $data['name'] = $user->name;
         $data['nim'] = $user->nim;

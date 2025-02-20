@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\ProfileMahasiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileMahasiswaController extends Controller
@@ -14,7 +15,7 @@ class ProfileMahasiswaController extends Controller
      */
     public function index()
     {
-        $data = ProfileMahasiswa::with(['user'])->get();
+        $data = ProfileMahasiswa::with(['user'])->where('user_id', Auth::user()->id)->first();
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -27,11 +28,11 @@ class ProfileMahasiswaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'bio' => 'required|string',
-            'alamat' => 'required|string',
-            'gender' => 'required|string',
-            'tempat' => 'required|string',
-            'tanggal_lahir' => 'required|date',
+            'bio' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'gender' => 'nullable|string',
+            'tempat' => 'nullable|string',
+            'tanggal_lahir' => 'nullable|date',
             'foto' => 'mimes:jpg,png,jpeg|max:3048',
             'hp' => 'required|numeric',
             'intagram' => 'nullable',

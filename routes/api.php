@@ -28,13 +28,13 @@ Route::prefix('/instruktur')->group(
         Route::post('/verifikasi', [AuthController::class, 'verifikasi']);
         Route::post('/resendotp', [AuthController::class, 'resendOTP']);
 
+        Route::apiResource('/users', UsersController::class);
         Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
 
             Route::apiResource('/kategori', KategoriController::class);
             Route::apiResource('/akun', AkunController::class);
             Route::apiResource('/kelas', KelasController::class);
-            Route::apiResource('/users', UsersController::class);
             Route::apiResource('/krs', KrsController::class);
             Route::apiResource('/profileinstruktur', ProfileInstrukturController::class);
             Route::apiResource('/kelasinstruktur', KelasInstrukturController::class);
@@ -51,6 +51,7 @@ Route::prefix('/instruktur')->group(
 
     }
 );
+
 Route::prefix('/mahasiswa')->group(
     function () {
         Route::post('/login', [AuthController::class, 'login_mahasiswa']);
