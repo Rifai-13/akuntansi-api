@@ -15,7 +15,7 @@ class KRSController extends Controller
     public function index()
     {
         // Mengambil semua data KRS dengan relasi kelas dan mahasiswa
-        $krs = Krs::with(['kelas', 'mahasiswa'])->get();
+        $krs = Krs::with(['kelas', 'mahasiswa'])->where('user_id', Auth::user()->id)->get();
 
         return response()->json([
             'success' => true,
