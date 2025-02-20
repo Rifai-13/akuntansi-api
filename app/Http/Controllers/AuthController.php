@@ -7,7 +7,6 @@ use App\Mail\SendMailOTP;
 use App\Models\OTP;
 use App\Models\ProfileMahasiswa;
 use App\Models\User;
-use App\Models\ProfileMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -52,7 +51,7 @@ class AuthController extends Controller
 
         $request['password'] = Hash::make($request['password']);
         $user = User::create($validated);
-        
+
         $iduser = $user['id'];
         ProfileMahasiswa::create($iduser);
 
