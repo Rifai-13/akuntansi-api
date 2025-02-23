@@ -21,6 +21,7 @@ use App\Http\Controllers\User\PerusahaanController;
 use App\Http\Controllers\User\ProfileMahasiswaController;
 use App\Http\Controllers\User\RingkasanController;
 use App\Http\Controllers\User\SubAkunController;
+use Illuminate\Support\Facades\Auth;
 
 Route::prefix('/instruktur')->group(
     function () {
@@ -82,5 +83,5 @@ Route::prefix('/mahasiswa')->group(
 );
 
 Route::get('/test', function (Request $request) {
-    return $request->user();
+    return Auth::user();
 })->middleware('auth:sanctum');
